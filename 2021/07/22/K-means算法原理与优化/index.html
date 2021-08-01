@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+  
+  <title>K-means算法介绍 - 七月的博客</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  <meta property="og:type" content="article">
+<meta property="og:title" content="K-means算法介绍">
+<meta property="og:url" content="http://jinxi.info/2021/07/22/K-means%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="七月的博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic-1304701097.file.myqcloud.com/web/分类结果.png">
+<meta property="og:image" content="https://pic-1304701097.file.myqcloud.com/web/转盘算法.png">
+<meta property="og:image" content="https://pic-1304701097.file.myqcloud.com/web/肘部法.png">
+<meta property="article:published_time" content="2021-07-21T16:12:17.000Z">
+<meta property="article:modified_time" content="2021-08-01T15:46:04.843Z">
+<meta property="article:author" content="七月">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic-1304701097.file.myqcloud.com/web/分类结果.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css,npm/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,npm/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css?v=233" crossorigin>
+  <link rel="stylesheet" href="/css/style.css?v=1627832792817">
+  
+  <link rel="stylesheet" href="/lib/iconfont/iconfont.css?v=1627832792817">
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://pic.16pic.com/00/93/38/16pic_9338455_b.png)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="七月" class="mdui-btn mdui-btn-icon"><img src="https://pic-1304701097.file.myqcloud.com/web/image-20210801001125399.png" alt="七月"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="七月">
+            <img src="https://pic-1304701097.file.myqcloud.com/web/image-20210801001125399.png" alt="七月" alt="七月">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>1</div>
+        <div><span>标签</span>0</div>
+        <div><span>分类</span>1</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+         
+            <form id="search_form" action_e="https://cn.bing.com/search?q=jinxi.info" onsubmit="return search();">
+                <label><input id="search_value" name="q" type="search" placeholder="搜索"></label>
+            </form>
+         
+    </div>
+</div>
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://space.bilibili.com/" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+  <div class="nexmoe-widget-wrap">
+    <h3 class="nexmoe-widget-title">文章分类</h3>
+    <div class="nexmoe-widget">
+
+      <ul class="category-list">
+
+        
+
+
+        
+
+        
+
+        <li class="category-list-item">
+          <a class="category-list-link" href="/categories/机器学习/">机器学习</a>
+          <span class="category-list-count">1</span>
+        </li>
+
+        
+      </ul>
+
+    </div>
+  </div>
+
+
+  
+  
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2021 七月
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+
+  <article>
+    
+        <div class="nexmoe-post-cover" style="padding-bottom: 62.5%;"> 
+            <img data-src="https://pic-1304701097.file.myqcloud.com/web/K-means算法.jpeg" data-sizes="auto" alt="K-means算法介绍" class="lazyload">
+            <h1>K-means算法介绍</h1>
+        </div>
+    
+    
+    <div class="nexmoe-post-meta nexmoe-rainbow" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2021年07月22日</a>
+    <a><i class="nexmoefont icon-areachart"></i>1.1k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 4 分钟</a>
+</div>
+
+    
+
+    <hr>
+<span id="more"></span>
+
+<h1 id="K-means算法介绍"><a href="#K-means算法介绍" class="headerlink" title="K-means算法介绍"></a>K-means算法介绍</h1><p>[TOC]</p>
+<h2 id="1-Kmeans"><a href="#1-Kmeans" class="headerlink" title="1.Kmeans"></a>1.Kmeans</h2><h3 id="1-1-K-means算法简介"><a href="#1-1-K-means算法简介" class="headerlink" title="1.1 K-means算法简介"></a>1.1 K-means算法简介</h3><p>​        K-means算法是一种无监督的聚类算法，根据给定的簇数K，将输入的数据集合分成K簇。它实现起来比较简单，聚类效果也不错，因此应用很广泛。这里介绍了基础的K-means算法，以及它的两个优化方法：K-means++和Mini Bacth K-means。</p>
+<h3 id="1-2-基础K-means算法步骤"><a href="#1-2-基础K-means算法步骤" class="headerlink" title="1.2 基础K-means算法步骤"></a>1.2 基础K-means算法步骤</h3><p>​    a）从给定的数据集中随机选取K个点作为聚类中心</p>
+<p>​    b）计算数据集中每个点到各个聚类中心的距离，然后将该点分配至其距离最近的聚类中心所在类</p>
+<p>​    c）更新聚类中心。计算每类所包含数据点的平均值，并作为该类新的聚类中心</p>
+<p>​    d）重复(b)(c)步骤，直至收敛（达到最大迭代次数或聚类中心不再变化）</p>
+<blockquote>
+<p>这里的距离一般采用欧氏距离计算</p>
+</blockquote>
+<h3 id="1-3-K-Means-与Mini-Batch-K-Means"><a href="#1-3-K-Means-与Mini-Batch-K-Means" class="headerlink" title="1.3 K-Means++与Mini Batch K-Means"></a>1.3 K-Means++与Mini Batch K-Means</h3><p>​        基础的K-means算法存在一个问题，就是当数据量比较大时，每次更新聚类中心需要大量的计算（(b)(c)两步），并且想要得到比较好的分类效果，需要迭代非常多次。</p>
+<h4 id="1-3-1-K-means"><a href="#1-3-1-K-means" class="headerlink" title="1.3.1 K-means++"></a>1.3.1 K-means++</h4><p>​        K-means++是一种优化初始聚类中心选取的策略。初始随机选取的聚类中心对聚类效果和运行时间都有很大的影响，聚类中心选取不好，不仅会导致较长的训练时间，还可能得到较差的局部最优解。如下图所示，分类结果①是效果较好的，但若是初始聚类中心选取的不好，也可能得到分类结果②和③。</p>
+<img data-fancybox="gallery" data-sizes="auto" data-src="https://pic-1304701097.file.myqcloud.com/web/分类结果.png" alt="image-20210719111404202" class="lazyload">
+
+<p>​        K-means++的基本思想是：聚类中心之间的距离一般来说相对较大，所以尽量选取相隔远的点作为聚类中心。这样选择有利于减少迭代次数，同时得到较好的局部最优解。它与常规K-means的区别就在于初始聚类中心的选取方法不同，选取步骤如下：<br>​        a）从数据集中随机选取一个聚类中心</p>
+<p>​        b）计算数据集中每个点到距离其最近的聚类中心的距离L</p>
+<p>​        c）抽取一个点作为新的聚类中心，L值越大被抽中的概率越大</p>
+<p>​        d）重复(b)(c)步骤，直至抽满K个聚类中心                </p>
+<blockquote>
+<p>​    (c)步骤使用转盘算法来实现抽取。简单概括就是，计算每个点到聚类中心的距离，将其计算结果组成数组，然后使用随机函数随机一个值，根据随机值结果选取新的聚类中心。<br>​    例：点集合为a,b,c,d。a点为聚类中心，b,c,d点到a点的距离分别是1,2,4。那么可以得到如下数组</p>
+<img data-fancybox="gallery" data-sizes="auto" data-src="https://pic-1304701097.file.myqcloud.com/web/转盘算法.png" alt="image-20210719105500621" class="lazyload">
+
+<p>​    那么随机函数结果为1，则选择b点为新的聚类中心；随机函数结果为3，则选择c点作为新的聚类中心，因为3处于c点的区域；同理随机函数结果值落在4~7之间，则选择d点为新的聚类中心</p>
+</blockquote>
+<h4 id="1-3-2-Mini-batch-K-means"><a href="#1-3-2-Mini-batch-K-means" class="headerlink" title="1.3.2 Mini batch K-means"></a>1.3.2 Mini batch K-means</h4><p>​        K-means++有利于减少训练的迭代次数，但是当数据量很大时，每次迭代中的计算量依旧巨大。Mini Bacth K-means则是针对计算量的优化，该算法在更新聚类中心时只使用小规模的数据子集，从而降低计算量，加快训练。不少实验已证明Mini Bacth K-means产生的结果效果只是略差于标准K-Means算法。</p>
+<p>​    a）选取K个聚类中心</p>
+<p>​    b）随机抽取部分数据（不放回抽取），计算得到每个点所属簇类</p>
+<p>​    c）更新聚类中心，这里只用抽取出来的部分数据</p>
+<p>​    d）重复(b)(c)步骤，直至收敛（达到最大迭代次数或聚类中心不再变化）</p>
+<h3 id="1-4-K值选取"><a href="#1-4-K值选取" class="headerlink" title="1.4 K值选取"></a>1.4 K值选取</h3><p>​        k值的选取对K-means训练结果影响很大,但对于如何选取K值并没有什么好的办法。一般是通过经验，或者是观察可视化的图，亦或是通过肘部法来选取。</p>
+<p>​        肘部法，即根据不同K选值下，将K-means模型的损失值绘制成图，选取拐角处的K值最优。很多时候肘部法也不起作用，因为不存在明显的拐点。</p>
+<img data-fancybox="gallery" data-sizes="auto" data-src="https://pic-1304701097.file.myqcloud.com/web/肘部法.png" alt="肘部法" class="lazyload">
+  </article>
+
+  
+    
+  <div class="nexmoe-post-copyright">
+    <strong>本文作者：</strong>七月<br>
+    <strong>本文链接：</strong><a href="http://jinxi.info/2021/07/22/K-means%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96/" title="http:&#x2F;&#x2F;jinxi.info&#x2F;2021&#x2F;07&#x2F;22&#x2F;K-means%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96&#x2F;" target="_blank" rel="noopener">http:&#x2F;&#x2F;jinxi.info&#x2F;2021&#x2F;07&#x2F;22&#x2F;K-means%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+        <a class="nexmoefont icon-appstore-fill -link" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+    
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'Ice-Tea-7.github.io',
+        owner: 'Ice-Tea-7',
+        admin: 'Ice-Tea-7'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+  </div>
+</div>
+        <div class="nexmoe-post-right">
+          <div class="nexmoe-fixed">
+            <div class="nexmoe-tool"> 
+              
+                
+                  
+                  
+                  
+                    <button class="mdui-fab catalog" style="overflow:unset;">
+                      <i class="nexmoefont icon-i-catalog"></i>
+                      <div class="nexmoe-toc">
+                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#K-means%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">K-means算法介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Kmeans"><span class="toc-number">1.1.</span> <span class="toc-text">1.Kmeans</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-K-means%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 K-means算法简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%9F%BA%E7%A1%80K-means%E7%AE%97%E6%B3%95%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 基础K-means算法步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-K-Means-%E4%B8%8EMini-Batch-K-Means"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 K-Means++与Mini Batch K-Means</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-1-K-means"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">1.3.1 K-means++</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-2-Mini-batch-K-means"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">1.3.2 Mini batch K-means</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-K%E5%80%BC%E9%80%89%E5%8F%96"><span class="toc-number">1.1.4.</span> <span class="toc-text">1.4 K值选取</span></a></li></ol></li></ol></li></ol>
+                      </div>
+                    </button>
+                  
+                    
+                
+              
+              <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+ 
+
+<script async src="/js/app.js?v=1627832792821"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+
+  
+
+
+
+
+
+</body>
+
+</html>
